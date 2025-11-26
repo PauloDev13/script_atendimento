@@ -1,0 +1,120 @@
+1 - URL login -> entrar na URL
+http://atendimento.pgm.intranet.natal.rn.gov.br/login
+
+2 - Campo usuário
+//*[@id="login"]/input[1] -> digitar "pgmadmin"
+
+3 - Campo senha
+//*[@id="login"]/input[2] -> digitar "Pgmnet00"
+
+4 - Botão login
+//*[@id="login"]/button -> Clicar
+
+5 - URL configurações -> depois do clique no login, acessar direto a URL
+http://atendimento.pgm.intranet.natal.rn.gov.br/novosga.settings/
+
+6 - Aba triagem
+//*[@id="settings"]/ul/li[2] -> Clicar na aba triagem
+
+7 - Botão atendimento fiscal -> Clicar no botão
+//*[@id="tab-triagem"]/div/div[2]/div/table[1]/tbody/tr[1]/td[3]/button
+
+8 - Boitão Chefia atendimento -> Clicar no botão
+//*[@id="tab-triagem"]/div/div[2]/div/table[1]/tbody/tr[2]/td[3]/button
+
+9 - Botão chefia fiscal -> Clicar no botão
+//*[@id="tab-triagem"]/div/div[2]/div/table[1]/tbody/tr[3]/td[3]/button
+
+10 - Fechar o browser a sair da aplicação
+
+
+"""
+Script de automação Selenium para login e navegação no sistema interno.
+Requisitos atendidos:
+- Selenium 4+
+- ChromeDriver com webdriver-manager
+- WebDriverWait em vez de time.sleep
+- Tratamento básico de exceções
+- Código organizado e comentado
+"""
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
+
+
+def main():
+    driver = None
+    try:
+        # Inicia o Chrome com webdriver-manager
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service)
+
+        # Define timeout padrão para waits
+        wait = WebDriverWait(driver, 20)
+
+        # Acessa a URL de login
+        driver.get("http://atendimento.pgm.intranet.natal.rn.gov.br/login")
+
+        # Preenche o login
+        usuario_input = wait.until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="login"]/input[1]'))
+        )
+        usuario_input.send_keys("pgmadmin")
+
+        # Preenche a senha
+        senha_input = wait.until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="login"]/input[2]'))
+        )
+        senha_input.send_keys("Pgmnet00")
+
+        # Clica no botão de login
+        btn_login = wait.until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="login"]/button'))
+        )
+        btn_login.click()
+
+        # Navega diretamente para a URL de configurações
+        driver.get("http://atendimento.pgm.intranet.natal.rn.gov.br/novosga.settings")
+
+        # Clica na aba especificada
+        aba = wait.until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="settings"]/ul/li[2]'))
+        )
+        aba.click()
+
+        # Botões a serem clicados em ordem
+        botoes_xpaths = [
+            '//*[@id="tab-triagem"]/div/div[2]/div/table[1]/tbody/tr[1]/td[3]/button',
+            '//*[@id="tab-triagem"]/div/div[2]/div/table[1]/tbody/tr[2]/td[3]/button',
+            '//*[@id="tab-triagem"]/div/div[2]/div/table[1]/tbody/tr[3]/td[3]/button',
+        ]
+
+        # Clicar cada botão
+        for xpath in botoes_xpaths:
+            botao = wait.until(
+                EC.element_to_be_clickable((By.XPATH, xpath))
+            )
+            botao.click()
+
+    except (TimeoutException, NoSuchElementException) as e:
+        print(f"Erro ao localizar elemento: {e}")
+    except WebDriverException as e:
+        print(f"Erro no WebDriver: {e}")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+    finally:
+        # Finaliza o driver de forma segura
+        if driver:
+            driver.quit()
+
+
+if __name__ == "__main__":
+    main()
+
+
+Cannot run program "C:\Users\paulo.morais\.pyenv\pyenv-win\shims\poetry" (in directory "C:\Desenvolvimento\_PROJETOS_PYTHON\script_atendimento"): CreateProcess error=193, %1 não é um aplicativo Win32 válido
