@@ -78,7 +78,13 @@ def main():
                 EC.element_to_be_clickable((By.XPATH, xpath))
             )
             botao.click()
-            aceitar_alerta(driver)
+            # aceitar_alerta(driver)
+            # Aceita alerta caso apareça
+            try:
+                wait.until(EC.alert_is_present())
+                driver.switch_to.alert.accept()
+            except TimeoutException:
+                pass
 
     except (TimeoutException, NoSuchElementException) as e:
         print(f"Erro ao localizar elemento: {e}")
