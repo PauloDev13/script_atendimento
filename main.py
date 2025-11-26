@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
 
 
@@ -23,10 +24,14 @@ def main():
         # Configurações do Chrome para rodar em background (sem abrir janela)
         options = Options()
         options.add_argument("--headless=new")
+        options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
         options.add_argument("--window-size=1920,1080")
+        options.add_argument("--remote-allow-origins=*")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("useAutomationExtension", False)
 
         # Inicia o Chrome com webdriver-manager
         service = Service(ChromeDriverManager().install())
@@ -59,6 +64,11 @@ def main():
         # Navega diretamente para a URL de configurações
         driver.get("http://atendimento.pgm.intranet.natal.rn.gov.br/novosga.settings")
 
+        # Adicionar logo aqui (ANTES de qualquer clique)
+        # driver.execute_script(
+        #     "window.alert = function(){}; window.confirm = function(){return true;};"
+        # )
+
         # Clica na aba especificada
         aba = wait.until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="settings"]/ul/li[2]'))
@@ -78,13 +88,13 @@ def main():
                 EC.element_to_be_clickable((By.XPATH, xpath))
             )
             botao.click()
-            # aceitar_alerta(driver)
+            aceitar_alerta(driver)
             # Aceita alerta caso apareça
-            try:
-                wait.until(EC.alert_is_present())
-                driver.switch_to.alert.accept()
-            except TimeoutException:
-                pass
+            # try:
+            #     wait.until(EC.alert_is_present())
+            #     driver.switch_to.alert.accept()
+            # except TimeoutException:
+            #     pass
 
     except (TimeoutException, NoSuchElementException) as e:
         print(f"Erro ao localizar elemento: {e}")
